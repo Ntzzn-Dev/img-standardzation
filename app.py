@@ -45,7 +45,7 @@ def process_image(url, margin_x, margin_y, enhance_quality):
         return None, None
 
 # Interface Gradio com sliders e checkbox
-with gr.Interface() as demo:
+with gr.Blocks() as demo:
     gr.Markdown("## Processador de Imagens")
     
     with gr.Row():
