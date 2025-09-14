@@ -6,20 +6,24 @@ import requests
 
 def process_image(url):
     try:
-        # Baixa a imagem da URL
+        # Baixa imagem
         response = requests.get(url)
         img = Image.open(io.BytesIO(response.content)).convert("RGBA")
 
-        # Remove fundo
-        img_no_bg = Image.open(io.BytesIO(remove(img.tobytes(), alpha_matting=True))).convert("RGBA")
+        # Remove fundo corretamente
+        img_bytes = io.BytesIO()
+        img.save(img_bytes, format="PNG")
+        img_bytes = img_bytes.getvalue()
+        result_bytes = remove(img_bytes)
+        img_no_bg = Image.open(io.BytesIO(result_bytes)).convert("RGBA")
 
-        # Transforma em quadrado (centraliza com transparência)
+        # Transforma em quadrado
         w, h = img_no_bg.size
         max_side = max(w, h)
         square_img = Image.new("RGBA", (max_side, max_side), (0, 0, 0, 0))
         square_img.paste(img_no_bg, ((max_side - w)//2, (max_side - h)//2), img_no_bg)
 
-        # Corta transparência
+        # Crop transparência
         bbox = square_img.getbbox()
         if bbox:
             square_img = square_img.crop(bbox)
