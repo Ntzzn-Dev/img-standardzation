@@ -34,16 +34,8 @@ def process_image(url, margin_x, margin_y):
         final_img = Image.new("RGBA", (final_w, final_h), (0, 0, 0, 0))
         final_img.paste(square_img, (margin_x, margin_y), square_img)
 
-        # Converte para bytes para Gradio
-        final_bytes = io.BytesIO()
-        final_img.save(final_bytes, format="PNG")
-        final_bytes.seek(0)
+        return img, final_img  # Retorna PIL.Image diretamente
 
-        original_bytes = io.BytesIO()
-        img.save(original_bytes, format="PNG")
-        original_bytes.seek(0)
-
-        return original_bytes, final_bytes
     except Exception as e:
         return None, None
 
@@ -56,8 +48,8 @@ demo = gr.Interface(
         gr.Slider(minimum=0, maximum=500, step=1, label="Margem Vertical")
     ],
     outputs=[
-        gr.Image(type="file", label="Imagem Original"),
-        gr.Image(type="file", label="Imagem Processada com Margens")
+        gr.Image(type="pil", label="Imagem Original"),
+        gr.Image(type="pil", label="Imagem Processada com Margens")
     ]
 )
 
