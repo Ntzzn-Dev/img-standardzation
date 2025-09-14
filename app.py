@@ -63,7 +63,7 @@ with gr.Blocks() as demo:
     
     with gr.Row():
         original_img = gr.Image(label="Imagem Original", type="pil")
-        processed_img = gr.Image(label="Imagem Processada", type="pil", type=["png", "bmp"], format="png")
+        processed_img = gr.Image(label="Imagem Processada", type="pil", format="png")
     
     process_button = gr.Button("Processar Imagem")
     process_button.click(process_image, 
