@@ -26,3 +26,5 @@ short_description: 'URL → remove fundo → quadrado → crop transparência �
 ## Descrição  
 
 Um projeto que recebe a URL de uma imagem, remove o fundo com IA, deixa a imagem quadrada adicionando pixels transparentes, corta a imagem tirando pixels transparentes desnecessário para que apenas o conteúdo caiba, adiciona margens definidas manualmente e disponibiliza para download 
+
+[Clique aqui para testar o app no Hugging Face Spaces](https://huggingface.co/spaces/Ntzzn/img-standardzation)
