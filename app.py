@@ -3,6 +3,7 @@ from rembg import remove
 from PIL import Image, ImageEnhance, ImageFilter
 import io
 import requests
+import tempfile
 
 def process_image(url, file, margin_x, margin_y, enhance_quality):
     try:
@@ -41,10 +42,18 @@ def process_image(url, file, margin_x, margin_y, enhance_quality):
         if enhance_quality:
             final_img = final_img.filter(ImageFilter.SHARPEN)
             final_img = ImageEnhance.Contrast(final_img).enhance(1.2)
+        
+        # Salva imagem temporária para download
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        final_img.save(tmp_file.name, format="PNG")
 
-        return img, final_img
+        return img, final_img, tmp_file.name
     except Exception as e:
-        return None, None
+        return None, None, None
+
+def trigger_download(file_path):
+    # simplesmente retorna o mesmo caminho armazenado em download_file
+    return file_path
 
 # Interface Gradio com sliders e checkbox
 with gr.Blocks() as demo:
@@ -64,12 +73,23 @@ with gr.Blocks() as demo:
     with gr.Row():
         original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False)
         processed_img = gr.Image(label="Imagem Processada", type="pil", format="png", show_share_button=False)
+
+    download_file = gr.File(label="Arquivo", visible=False)
+
+    with gr.Row():
+        process_button = gr.Button("Processar Imagem")
+        download_button = gr.Button("⬇️ Baixar Imagem")
     
-    process_button = gr.Button("Processar Imagem")
     process_button.click(process_image, 
                          inputs=[url_input, img_input, margin_x, margin_y, enhance_checkbox],
-                         outputs=[original_img, processed_img])
+                         outputs=[original_img, processed_img, download_file])
                     
+    download_button.click(
+        trigger_download,
+        inputs=[download_file],
+        outputs=[download_file]
+    )
+
 
 if __name__ == "__main__":
     demo.launch()
