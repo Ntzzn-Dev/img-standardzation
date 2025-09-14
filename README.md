@@ -1,8 +1,8 @@
 ---
 title: Img Standardzation
 emoji: 🖼️
-colorFrom: orange
-colorTo: black
+colorFrom: yellow
+colorTo: gray
 sdk: gradio
 sdk_version: 5.45.0
 app_file: app.py
