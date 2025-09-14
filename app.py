@@ -1,10 +1,10 @@
 import gradio as gr
 from rembg import remove
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageFilter
 import io
 import requests
 
-def process_image(url, margin_x, margin_y):
+def process_image(url, margin_x, margin_y, enhance_quality):
     try:
         # Baixa imagem
         response = requests.get(url)
@@ -34,18 +34,24 @@ def process_image(url, margin_x, margin_y):
         final_img = Image.new("RGBA", (final_w, final_h), (0, 0, 0, 0))
         final_img.paste(square_img, (margin_x, margin_y), square_img)
 
-        return img, final_img  # Retorna PIL.Image diretamente
+        # Melhorar qualidade levemente
+        if enhance_quality:
+            final_img = final_img.filter(ImageFilter.SHARPEN)
+            final_img = ImageEnhance.Contrast(final_img).enhance(1.2)
+
+        return img, final_img
 
     except Exception as e:
         return None, None
 
-# Interface Gradio com sliders
+# Interface Gradio com sliders e checkbox
 demo = gr.Interface(
     fn=process_image,
     inputs=[
         gr.Textbox(label="Cole a URL da imagem"),
         gr.Slider(minimum=0, maximum=500, step=1, label="Margem Horizontal"),
-        gr.Slider(minimum=0, maximum=500, step=1, label="Margem Vertical")
+        gr.Slider(minimum=0, maximum=500, step=1, label="Margem Vertical"),
+        gr.Checkbox(label="Melhorar Qualidade (leve)")
     ],
     outputs=[
         gr.Image(type="pil", label="Imagem Original"),
