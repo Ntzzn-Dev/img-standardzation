@@ -46,15 +46,35 @@ def process_image(url, margin_x, margin_y, enhance_quality):
 
 # Interface Gradio com sliders e checkbox
 with gr.Blocks() as demo:
-    gr.Markdown("## Processador de Imagens")
+    gr.Markdown("## 🎨 Processador de Imagens")
+    
+    with gr.Row():
+        url_input = gr.Textbox(label="Cole a URL da imagem")
+        enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade", value=True)
+    
+    with gr.Row():
+        margin_x = gr.Slider(0, 500, 1, value=50, label="Margem Horizontal")
+        margin_y = gr.Slider(0, 500, 1, value=50, label="Margem Vertical")
+    
+    with gr.Row():
+        original_img = gr.Image(label="Imagem Original", type="pil")
+        processed_img = gr.Image(label="Imagem Processada", type="pil")
+    
+    process_button = gr.Button("Processar")
+    process_button.click(process_image, 
+                         inputs=[url_input, margin_x, margin_y, enhance_checkbox],
+                         outputs=[original_img, processed_img])
+
+with gr.Blocks() as demo:
+    gr.Markdown("## 🎨 Processador de Imagens")
     
     with gr.Row():
         url_input = gr.Textbox(label="Cole a URL da imagem")
         enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
     
     with gr.Row():
-        margin_x = gr.Slider(0, 500, value=40, label="Margem Horizontal")
-        margin_y = gr.Slider(0, 500, value=40, label="Margem Vertical")
+        margin_x = gr.Slider(0, 500, 1, value=50, label="Margem Horizontal")
+        margin_y = gr.Slider(0, 500, 1, value=50, label="Margem Vertical")
     
     with gr.Row():
         original_img = gr.Image(label="Imagem Original", type="pil")
@@ -64,6 +84,7 @@ with gr.Blocks() as demo:
     process_button.click(process_image, 
                          inputs=[url_input, margin_x, margin_y, enhance_checkbox],
                          outputs=[original_img, processed_img])
+                    
 
 if __name__ == "__main__":
     demo.launch()
