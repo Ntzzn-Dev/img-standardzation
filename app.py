@@ -4,20 +4,20 @@ from PIL import Image
 import io
 import requests
 
-def process_image(url):
+def process_image(url, margin_x, margin_y):
     try:
         # Baixa imagem
         response = requests.get(url)
         img = Image.open(io.BytesIO(response.content)).convert("RGBA")
 
-        # Remove fundo corretamente
+        # Remove fundo
         img_bytes = io.BytesIO()
         img.save(img_bytes, format="PNG")
         img_bytes = img_bytes.getvalue()
         result_bytes = remove(img_bytes)
         img_no_bg = Image.open(io.BytesIO(result_bytes)).convert("RGBA")
 
-        # Transforma em quadrado
+        # Transformar em quadrado
         w, h = img_no_bg.size
         max_side = max(w, h)
         square_img = Image.new("RGBA", (max_side, max_side), (0, 0, 0, 0))
@@ -28,9 +28,15 @@ def process_image(url):
         if bbox:
             square_img = square_img.crop(bbox)
 
-        # Converte para PNG bytes para Gradio
+        # Adiciona margens
+        final_w = square_img.width + 2 * margin_x
+        final_h = square_img.height + 2 * margin_y
+        final_img = Image.new("RGBA", (final_w, final_h), (0, 0, 0, 0))
+        final_img.paste(square_img, (margin_x, margin_y), square_img)
+
+        # Converte para bytes para Gradio
         final_bytes = io.BytesIO()
-        square_img.save(final_bytes, format="PNG")
+        final_img.save(final_bytes, format="PNG")
         final_bytes.seek(0)
 
         original_bytes = io.BytesIO()
@@ -41,12 +47,17 @@ def process_image(url):
     except Exception as e:
         return None, None
 
+# Interface Gradio com sliders
 demo = gr.Interface(
     fn=process_image,
-    inputs=gr.Textbox(label="Cole a URL da imagem"),
+    inputs=[
+        gr.Textbox(label="Cole a URL da imagem"),
+        gr.Slider(minimum=0, maximum=500, step=1, label="Margem Horizontal"),
+        gr.Slider(minimum=0, maximum=500, step=1, label="Margem Vertical")
+    ],
     outputs=[
         gr.Image(type="file", label="Imagem Original"),
-        gr.Image(type="file", label="Imagem Processada")
+        gr.Image(type="file", label="Imagem Processada com Margens")
     ]
 )
 
