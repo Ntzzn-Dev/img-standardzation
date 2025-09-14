@@ -3,9 +3,8 @@ from rembg import remove
 from PIL import Image, ImageEnhance, ImageFilter
 import io
 import requests
-import tempfile
 
-def process_image(url, file, margin_x, margin_y, enhance_quality, format_choice):
+def process_image(url, file, margin_x, margin_y, enhance_quality):
     try:
         # Baixa imagem
         if file is not None:
@@ -43,14 +42,7 @@ def process_image(url, file, margin_x, margin_y, enhance_quality, format_choice)
             final_img = final_img.filter(ImageFilter.SHARPEN)
             final_img = ImageEnhance.Contrast(final_img).enhance(1.2)
 
-        print("no aguardo")
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{format_choice.lower()}")
-        final_img.save(temp_file.name, format=format_choice)
-        temp_file.close()
-        print("Imagem processada, arquivo salvo em:", temp_file.name)
-
-        return img, temp_file.name
-
+        return img, final_img
     except Exception as e:
         return None, None
 
@@ -61,20 +53,21 @@ with gr.Blocks() as demo:
     with gr.Row():
         img_input = gr.File(label="Escolha uma imagem")
         url_input = gr.Textbox(label="Cole a URL da imagem")
+
+    with gr.Row():
         enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
-        format_choice = gr.Dropdown(["PNG", "BMP"], value="PNG", label="Formato para download")
-    
+
     with gr.Row():
         margin_x = gr.Slider(0, 500, step=1, value=40, label="Margem Horizontal")
         margin_y = gr.Slider(0, 500, step=1, value=40, label="Margem Vertical")
     
     with gr.Row():
         original_img = gr.Image(label="Imagem Original", type="pil")
-        processed_img = gr.File(label="Imagem Processada", type="filepath")
+        processed_img = gr.Image(label="Imagem Processada", type="pil", file_types=[".png", ".bmp"])
     
     process_button = gr.Button("Processar Imagem")
     process_button.click(process_image, 
-                         inputs=[url_input, img_input, margin_x, margin_y, enhance_checkbox, format_choice],
+                         inputs=[url_input, img_input, margin_x, margin_y, enhance_checkbox],
                          outputs=[original_img, processed_img])
                     
 
