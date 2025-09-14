@@ -28,14 +28,26 @@ def process_image(url):
         if bbox:
             square_img = square_img.crop(bbox)
 
-        return square_img
+        # Converte para PNG bytes para Gradio
+        final_bytes = io.BytesIO()
+        square_img.save(final_bytes, format="PNG")
+        final_bytes.seek(0)
+
+        original_bytes = io.BytesIO()
+        img.save(original_bytes, format="PNG")
+        original_bytes.seek(0)
+
+        return original_bytes, final_bytes
     except Exception as e:
-        return f"Erro: {str(e)}"
+        return None, None
 
 demo = gr.Interface(
     fn=process_image,
     inputs=gr.Textbox(label="Cole a URL da imagem"),
-    outputs=gr.Image(type="pil", label="Resultado")
+    outputs=[
+        gr.Image(type="file", label="Imagem Original"),
+        gr.Image(type="file", label="Imagem Processada")
+    ]
 )
 
 if __name__ == "__main__":
