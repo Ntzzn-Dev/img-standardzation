@@ -4,11 +4,14 @@ from PIL import Image, ImageEnhance, ImageFilter
 import io
 import requests
 
-def process_image(url, margin_x, margin_y, enhance_quality):
+def process_image(url, file, margin_x, margin_y, enhance_quality, format_choice):
     try:
         # Baixa imagem
-        response = requests.get(url)
-        img = Image.open(io.BytesIO(response.content)).convert("RGBA")
+        if file is not None:
+            img = Image.open(file).convert("RGBA")
+        else:
+            response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+            img = Image.open(io.BytesIO(response.content)).convert("RGBA")
 
         # Remove fundo
         img_bytes = io.BytesIO()
@@ -39,7 +42,10 @@ def process_image(url, margin_x, margin_y, enhance_quality):
             final_img = final_img.filter(ImageFilter.SHARPEN)
             final_img = ImageEnhance.Contrast(final_img).enhance(1.2)
 
-        return img, final_img
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{format_choice.lower()}")
+        final_img.save(temp_file.name, format=format_choice)
+
+        return img, temp_file.name
 
     except Exception as e:
         return None, None
@@ -49,20 +55,22 @@ with gr.Blocks() as demo:
     gr.Markdown("## Processador de Imagens")
     
     with gr.Row():
+        img_input = gr.File(label="Escolha uma imagem")
         url_input = gr.Textbox(label="Cole a URL da imagem")
         enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
+        format_choice = gr.Dropdown(["PNG", "BMP"], value="PNG", label="Formato para download")
     
     with gr.Row():
-        margin_x = gr.Slider(0, 500, value=40, label="Margem Horizontal")
-        margin_y = gr.Slider(0, 500, value=40, label="Margem Vertical")
+        margin_x = gr.Slider(0, 500, step=1, value=40, label="Margem Horizontal")
+        margin_y = gr.Slider(0, 500, step=1, value=40, label="Margem Vertical")
     
     with gr.Row():
         original_img = gr.Image(label="Imagem Original", type="pil")
-        processed_img = gr.Image(label="Imagem Processada", type="pil")
+        processed_img = gr.File(label="Imagem Processada", type="pil")
     
     process_button = gr.Button("Processar Imagem")
     process_button.click(process_image, 
-                         inputs=[url_input, margin_x, margin_y, enhance_checkbox],
+                         inputs=[url_input, img_input, margin_x, margin_y, enhance_checkbox, format_choice],
                          outputs=[original_img, processed_img])
                     
 
