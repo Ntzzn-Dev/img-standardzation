@@ -2,3 +2,4 @@ gradio
 rembg
 pillow
 requests
+onnxruntime
