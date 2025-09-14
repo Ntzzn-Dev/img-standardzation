@@ -42,8 +42,11 @@ def process_image(url, file, margin_x, margin_y, enhance_quality, format_choice)
             final_img = final_img.filter(ImageFilter.SHARPEN)
             final_img = ImageEnhance.Contrast(final_img).enhance(1.2)
 
+        print("no aguardo")
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{format_choice.lower()}")
         final_img.save(temp_file.name, format=format_choice)
+        temp_file.close()
+        print("Imagem processada, arquivo salvo em:", temp_file.name)
 
         return img, temp_file.name
 
