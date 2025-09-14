@@ -3,6 +3,7 @@ from rembg import remove
 from PIL import Image, ImageEnhance, ImageFilter
 import io
 import requests
+import tempfile
 
 def process_image(url, file, margin_x, margin_y, enhance_quality, format_choice):
     try:
