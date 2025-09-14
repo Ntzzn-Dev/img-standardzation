@@ -51,10 +51,8 @@ with gr.Blocks() as demo:
     gr.Markdown("## Processador de Imagens")
     
     with gr.Row():
-        with gr.Column(scale=1):
-            img_input = gr.File(label="Escolha uma imagem")
-        with gr.Column(scale=1):
-            url_input = gr.Textbox(label="Cole a URL da imagem")
+        img_input = gr.File(label="Escolha uma imagem", height=89)
+        url_input = gr.Textbox(label="Cole a URL da imagem")
 
     with gr.Row():
         enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
