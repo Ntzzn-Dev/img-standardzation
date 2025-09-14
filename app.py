@@ -51,8 +51,10 @@ with gr.Blocks() as demo:
     gr.Markdown("## Processador de Imagens")
     
     with gr.Row():
-        img_input = gr.File(label="Escolha uma imagem")
-        url_input = gr.Textbox(label="Cole a URL da imagem")
+        with gr.Column(scale=1):
+            img_input = gr.File(label="Escolha uma imagem")
+        with gr.Column(scale=1):
+            url_input = gr.Textbox(label="Cole a URL da imagem")
 
     with gr.Row():
         enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
@@ -62,8 +64,8 @@ with gr.Blocks() as demo:
         margin_y = gr.Slider(0, 500, step=1, value=40, label="Margem Vertical")
     
     with gr.Row():
-        original_img = gr.Image(label="Imagem Original", type="pil")
-        processed_img = gr.Image(label="Imagem Processada", type="pil", format="png")
+        original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False)
+        processed_img = gr.Image(label="Imagem Processada", type="pil", format="png", show_share_button=False)
     
     process_button = gr.Button("Processar Imagem")
     process_button.click(process_image, 
