@@ -3,7 +3,6 @@ from rembg import remove
 from PIL import Image, ImageEnhance, ImageFilter
 import io
 import requests
-import tempfile
 
 def process_image(url, file, margin_x, margin_y, enhance_quality):
     try:
@@ -43,11 +42,7 @@ def process_image(url, file, margin_x, margin_y, enhance_quality):
             final_img = final_img.filter(ImageFilter.SHARPEN)
             final_img = ImageEnhance.Contrast(final_img).enhance(1.2)
         
-        # Salva imagem temporária para download
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-        final_img.save(tmp_file.name, format="PNG")
-
-        return img, final_img, tmp_file.name
+        return img, final_img
     except Exception as e:
         return None, None, None
 
@@ -80,7 +75,7 @@ with gr.Blocks() as demo:
     
     process_button.click(process_image, 
                          inputs=[url_input, img_input, margin_x, margin_y, enhance_checkbox],
-                         outputs=[original_img, processed_img, download_file])
+                         outputs=[original_img, processed_img])
                     
     download_button.click(
         trigger_download,
