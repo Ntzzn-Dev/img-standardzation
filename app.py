@@ -57,10 +57,10 @@ with gr.Blocks() as demo:
     gr.Markdown("## Processador de Imagens")
     
     with gr.Row():
-        with gr.Column():
-            img_input = gr.File(label="Escolha uma imagem", height=89)
+        with gr.Column(scale=2):
+            img_input = gr.File(label="Escolha uma imagem")
             url_input = gr.Textbox(label="Cole a URL da imagem")
-        with gr.Column():
+        with gr.Column(scale=1):
             original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False, scale=1)
 
 
