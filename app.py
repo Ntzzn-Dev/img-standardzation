@@ -34,8 +34,14 @@ def process_image(url, file, margin_x, margin_y, enhance_quality):
         # Adiciona margens
         final_w = square_img.width + 2 * margin_x
         final_h = square_img.height + 2 * margin_y
-        final_img = Image.new("RGBA", (final_w, final_h), (0, 0, 0, 0))
-        final_img.paste(square_img, (margin_x, margin_y), square_img)
+        square_img2 = Image.new("RGBA", (final_w, final_h), (0, 0, 0, 0))
+        square_img2.paste(square_img, (margin_x, margin_y), square_img)
+
+        # Transformar em quadrado novamente
+        w, h = square_img2.size
+        max_side = max(w, h)
+        final_img = Image.new("RGBA", (max_side, max_side), (0, 0, 0, 0))
+        final_img.paste(square_img2, ((max_side - w)//2, (max_side - h)//2), square_img2)
 
         # Melhorar qualidade levemente
         if enhance_quality:
@@ -51,8 +57,12 @@ with gr.Blocks() as demo:
     gr.Markdown("## Processador de Imagens")
     
     with gr.Row():
-        img_input = gr.File(label="Escolha uma imagem", height=89)
-        url_input = gr.Textbox(label="Cole a URL da imagem")
+        with gr.Column():
+            img_input = gr.File(label="Escolha uma imagem", height=89)
+            url_input = gr.Textbox(label="Cole a URL da imagem")
+        with gr.Column():
+            original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False, scale=1)
+
 
     with gr.Row():
         enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
@@ -62,9 +72,7 @@ with gr.Blocks() as demo:
         margin_y = gr.Slider(0, 500, step=1, value=40, label="Margem Vertical")
     
     with gr.Row():
-        with gr.Column():
-            original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False)
-            processedBMP_img = gr.Image(label="Imagem Processada BMP", type="pil", format="bmp", show_share_button=False)  
+        processedBMP_img = gr.Image(label="Imagem Processada BMP", type="pil", format="bmp", show_share_button=False)  
         processedPNG_img = gr.Image(label="Imagem Processada PNG", type="pil", format="png", show_share_button=False)
     
     process_button = gr.Button("Processar Imagem")
