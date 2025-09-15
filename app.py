@@ -51,9 +51,9 @@ def process_image(url, file, margin_x, margin_y, enhance_quality):
     except Exception as e:
         return None, None, None
 
-def trigger_download(file_path):
-    # simplesmente retorna o mesmo caminho armazenado em download_file
-    return file_path
+def trigger_download(processed_img):
+    # Retorna o caminho e torna visível
+    return gr.update(value=processed_img, format="bmp")
 
 # Interface Gradio com sliders e checkbox
 with gr.Blocks() as demo:
@@ -74,8 +74,6 @@ with gr.Blocks() as demo:
         original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False)
         processed_img = gr.Image(label="Imagem Processada", type="pil", format="png", show_share_button=False)
 
-    download_file = gr.File(label="Arquivo", visible=False)
-
     with gr.Row():
         process_button = gr.Button("Processar Imagem")
         download_button = gr.Button("⬇️ Baixar Imagem")
@@ -86,8 +84,8 @@ with gr.Blocks() as demo:
                     
     download_button.click(
         trigger_download,
-        inputs=[download_file],
-        outputs=[download_file]
+        inputs=[processed_img],
+        outputs=[processed_img]
     )
 
 
