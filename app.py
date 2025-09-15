@@ -50,7 +50,7 @@ def process_image(url, file, margin_x, margin_y, enhance_quality):
 
         return img, final_img, final_img
     except Exception as e:
-        return None, None
+        return None, None, None
 
 # Interface Gradio com sliders e checkbox
 with gr.Blocks() as demo:
@@ -60,17 +60,12 @@ with gr.Blocks() as demo:
         with gr.Column(scale=2):
             img_input = gr.File(label="Escolha uma imagem")
             url_input = gr.Textbox(label="Cole a URL da imagem")
+            enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
+            margin_x = gr.Slider(0, 500, step=1, value=40, label="Margem Horizontal")
+            margin_y = gr.Slider(0, 500, step=1, value=40, label="Margem Vertical")
         with gr.Column(scale=1):
             original_img = gr.Image(label="Imagem Original", type="pil", show_share_button=False, scale=1)
 
-
-    with gr.Row():
-        enhance_checkbox = gr.Checkbox(label="Melhorar Qualidade (leve)", value=True)
-
-    with gr.Row():
-        margin_x = gr.Slider(0, 500, step=1, value=40, label="Margem Horizontal")
-        margin_y = gr.Slider(0, 500, step=1, value=40, label="Margem Vertical")
-    
     with gr.Row():
         processedBMP_img = gr.Image(label="Imagem Processada BMP", type="pil", format="bmp", show_share_button=False)  
         processedPNG_img = gr.Image(label="Imagem Processada PNG", type="pil", format="png", show_share_button=False)
